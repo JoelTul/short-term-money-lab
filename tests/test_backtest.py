@@ -88,3 +88,15 @@ def test_evaluate_strategy_labels_output():
     assert list(result.index) == ["1-3 months"]
     assert result.loc["1-3 months", "observations"] == 7
 
+def test_mixed_index_preserves_start_date_and_rebalances():
+    risky = monthly_series([100, 80, 100])
+    safe = monthly_series([100, 101, 102])
+
+    mixed = mix_indices(risky, safe, risky_weight=0.20)
+
+    assert mixed.index.equals(risky.index)
+    assert mixed.iloc[0] == pytest.approx(1.0)
+    assert mixed.iloc[1] == pytest.approx(0.968)
+    assert mixed.iloc[2] == pytest.approx(
+        0.968 * (1 + 0.20 * 0.25 + 0.80 * (102 / 101 - 1))
+    )

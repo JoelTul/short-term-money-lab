@@ -83,17 +83,25 @@ def mix_indices(
     """Build a monthly, constant-weight strategy rebalanced every month."""
     if not 0.0 <= risky_weight <= 1.0:
         raise ValueError("risky_weight must be between 0 and 1")
+
     aligned = pd.concat(
         [to_monthly_index(risky_index), to_monthly_index(safe_index)],
         axis=1,
         join="inner",
     ).dropna()
+
+    if len(aligned) < 2:
+        raise ValueError("At least two shared monthly observations are required")
+
     returns = aligned.pct_change().dropna()
     mixed_returns = (
         risky_weight * returns.iloc[:, 0]
         + (1.0 - risky_weight) * returns.iloc[:, 1]
     )
-    wealth = (1.0 + mixed_returns).cumprod()
+
+    wealth = pd.Series(index=aligned.index, dtype=float)
+    wealth.iloc[0] = 1.0
+    wealth.iloc[1:] = (1.0 + mixed_returns).cumprod().to_numpy()
     wealth.name = f"{risky_weight:.0%} risky / {1-risky_weight:.0%} safe"
     return wealth
 
