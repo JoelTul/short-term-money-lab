@@ -3,7 +3,7 @@
 import pandas as pd
 
 from short_term_money import WINDOW_BUCKETS, evaluate_universe
-from short_term_money.data import download_adjusted_prices
+from short_term_money.data import download_adjusted_prices, mix_indices
 
 
 def main():
@@ -33,13 +33,20 @@ def main():
     if not prices.index.equals(expected_months):
         raise SystemExit("The downloaded prices contain missing months.")
 
-    results = evaluate_universe(
-        {
-            "S&P 500 ETF (SPY)": prices["SPY"],
-            "Treasury bill ETF (BIL)": prices["BIL"],
-        },
-        WINDOW_BUCKETS,
-    )
+    strategies = {
+        "S&P 500 ETF (SPY)": prices["SPY"],
+        "Treasury bill ETF (BIL)": prices["BIL"],
+    }
+
+    for stock_weight in (0.10, 0.20, 0.40):
+        label = f"{stock_weight:.0%} SPY / {1 - stock_weight:.0%} BIL"
+        strategies[label] = mix_indices(
+            prices["SPY"],
+            prices["BIL"],
+            risky_weight=stock_weight,
+        )
+
+    results = evaluate_universe(strategies, WINDOW_BUCKETS)
 
     columns = [
         "strategy",
