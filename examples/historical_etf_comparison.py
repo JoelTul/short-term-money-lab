@@ -1,5 +1,7 @@
 """Compare historical SPY and BIL returns across withdrawal windows."""
 
+from pathlib import Path
+
 import pandas as pd
 
 from short_term_money import WINDOW_BUCKETS, evaluate_universe
@@ -15,10 +17,8 @@ def main():
     except Exception as exc:
         raise SystemExit(f"Market data download failed: {exc}") from exc
 
-    # Compare both funds over the same months.
+    # Compare both funds over the same complete months.
     prices = prices[["SPY", "BIL"]].dropna()
-
-    # Exclude the current month, which may not be finished.
     last_complete_month = (
         pd.Timestamp.now(tz="UTC").tz_localize(None).to_period("M") - 1
     )
@@ -47,6 +47,14 @@ def main():
         )
 
     results = evaluate_universe(strategies, WINDOW_BUCKETS)
+    results["observations"] = results["observations"].astype(int)
+    results.insert(0, "sample_start", prices.index[0].strftime("%Y-%m"))
+    results.insert(1, "sample_end", prices.index[-1].strftime("%Y-%m"))
+
+    project_root = Path(__file__).resolve().parents[1]
+    output_path = project_root / "outputs" / "historical_etf_comparison.csv"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    results.to_csv(output_path, index=False)
 
     columns = [
         "strategy",
@@ -58,16 +66,17 @@ def main():
         "window_loss_probability",
     ]
 
-    results["observations"] = results["observations"].astype(int)
+    display = results[columns].copy()
     for column in columns[3:]:
-        results[column] = results[column].map(lambda value: f"{value:.1%}")
+        display[column] = display[column].map(lambda value: f"{value:.1%}")
 
     print(
         f"Shared sample: {prices.index[0]:%Y-%m} through "
         f"{prices.index[-1]:%Y-%m}"
     )
     print("Adjusted ETF prices; before taxes and inflation.")
-    print(results[columns].to_string(index=False))
+    print(display.to_string(index=False))
+    print(f"Saved numeric results to {output_path}")
 
 
 if __name__ == "__main__":
