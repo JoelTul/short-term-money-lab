@@ -1,4 +1,4 @@
-"""Compare historical SPY and BIL returns across withdrawal windows."""
+"""Compare historical SPY, BIL, and SHY returns across withdrawal windows."""
 
 from pathlib import Path
 
@@ -9,16 +9,18 @@ from short_term_money.data import download_adjusted_prices, mix_indices
 
 
 def main():
+    tickers = ["SPY", "BIL", "SHY"]
+
     try:
         prices = download_adjusted_prices(
-            ["SPY", "BIL"],
+            tickers,
             start="2008-01-01",
         )
     except Exception as exc:
         raise SystemExit(f"Market data download failed: {exc}") from exc
 
-    # Compare both funds over the same complete months.
-    prices = prices[["SPY", "BIL"]].dropna()
+    # Compare every strategy over the same complete months.
+    prices = prices[tickers].dropna()
     last_complete_month = (
         pd.Timestamp.now(tz="UTC").tz_localize(None).to_period("M") - 1
     )
@@ -36,6 +38,7 @@ def main():
     strategies = {
         "S&P 500 ETF (SPY)": prices["SPY"],
         "Treasury bill ETF (BIL)": prices["BIL"],
+        "1-3 year Treasury bond ETF (SHY)": prices["SHY"],
     }
 
     for stock_weight in (0.10, 0.20, 0.40):
