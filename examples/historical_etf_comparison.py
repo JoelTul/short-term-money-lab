@@ -1,10 +1,11 @@
-"""Compare historical SPY, BIL, and SHY returns across withdrawal windows."""
+"""Compare historical ETF returns across withdrawal windows."""
 
 from pathlib import Path
 
 import pandas as pd
 
 from short_term_money import WINDOW_BUCKETS, evaluate_universe
+from short_term_money.backtest import rolling_window_outcomes
 from short_term_money.data import download_adjusted_prices, mix_indices
 
 
@@ -12,14 +13,10 @@ def main():
     tickers = ["SPY", "BIL", "SHY"]
 
     try:
-        prices = download_adjusted_prices(
-            tickers,
-            start="2008-01-01",
-        )
+        prices = download_adjusted_prices(tickers, start="2008-01-01")
     except Exception as exc:
         raise SystemExit(f"Market data download failed: {exc}") from exc
 
-    # Compare every strategy over the same complete months.
     prices = prices[tickers].dropna()
     last_complete_month = (
         pd.Timestamp.now(tz="UTC").tz_localize(None).to_period("M") - 1
@@ -50,6 +47,39 @@ def main():
         )
 
     results = evaluate_universe(strategies, WINDOW_BUCKETS)
+
+    # Pair each result with BIL from the same starting and ending months.
+    comparisons = []
+    for window in WINDOW_BUCKETS:
+        bil_outcomes = rolling_window_outcomes(prices["BIL"], window)[
+            ["start_date", "end_date", "end_return"]
+        ].rename(columns={"end_return": "bil_end_return"})
+
+        for strategy_name, wealth_index in strategies.items():
+            outcomes = rolling_window_outcomes(wealth_index, window)
+            paired = outcomes.merge(
+                bil_outcomes,
+                on=["start_date", "end_date"],
+                validate="one_to_one",
+            )
+            if len(paired) != len(outcomes):
+                raise SystemExit("Could not align all results with BIL.")
+
+            excess = paired["end_return"] - paired["bil_end_return"]
+            comparisons.append(
+                {
+                    "strategy": strategy_name,
+                    "window": window.label,
+                    "median_excess_end_return_vs_bil": float(excess.median()),
+                    "probability_below_bil": float((excess < 0).mean()),
+                }
+            )
+
+    results = results.merge(
+        pd.DataFrame(comparisons),
+        on=["strategy", "window"],
+        validate="one_to_one",
+    )
     results["observations"] = results["observations"].astype(int)
     results.insert(0, "sample_start", prices.index[0].strftime("%Y-%m"))
     results.insert(1, "sample_end", prices.index[-1].strftime("%Y-%m"))
@@ -67,6 +97,8 @@ def main():
         "p05_end_return",
         "nominal_loss_probability",
         "window_loss_probability",
+        "median_excess_end_return_vs_bil",
+        "probability_below_bil",
     ]
 
     display = results[columns].copy()
@@ -78,6 +110,7 @@ def main():
         f"{prices.index[-1]:%Y-%m}"
     )
     print("Adjusted ETF prices; before taxes and inflation.")
+    print("Excess return is measured in percentage points versus BIL.")
     print(display.to_string(index=False))
     print(f"Saved numeric results to {output_path}")
 
