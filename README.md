@@ -2,145 +2,82 @@
 
 [![Tests](https://github.com/JoelTul/short-term-money-lab/actions/workflows/tests.yml/badge.svg)](https://github.com/JoelTul/short-term-money-lab/actions/workflows/tests.yml)
 
-A Python backtesting project for comparing where to hold money that will be needed within the next 1 to 36 months.
+Where should you keep money you’ll need in the next 1 to 36 months?
 
-## Overview
+This project uses historical data to compare the return you might earn with the risk of having less money when it’s time to withdraw. It looks at both fixed withdrawal dates and ranges, such as needing the money sometime between 6 and 9 months from now.
 
-Short-term money presents a tradeoff: cash protects principal, while assets such as stocks and bonds may offer better returns at the cost of being down when the money is needed.
+## What you can run now
 
-This project measures that tradeoff across different holding periods and market conditions. Instead of ranking strategies only by average return, it focuses on the questions that matter when an upcoming expense has to be funded:
+The historical example compares six strategies over the same months:
 
-- How often did the strategy lose money?
-- How severe were the worst outcomes?
-- Did returns keep pace with inflation?
-- How did the strategy compare with a cash benchmark?
-- At what horizon, if any, did taking additional risk become worthwhile?
+- S&P 500 ETF (SPY)
+- Treasury bill ETF (BIL)
+- 1–3 year Treasury bond ETF (SHY)
+- Monthly rebalanced mixes of 10%, 20%, or 40% SPY, with the rest in BIL
 
-## Fixed Dates vs. Withdrawal Windows
+It evaluates each strategy across seven withdrawal windows: 1–3, 3–6, 6–9, 9–12, 12–18, 18–24, and 24–36 months.
 
-The analysis separates two common situations:
+BIL is an ETF comparison, not a historical high-yield savings account. The historical results are before taxes and inflation.
 
-- **Fixed-date need:** The money is required on a known date, such as exactly 12 months from now.
-- **Withdrawal window:** The money may be required at any point in a range, such as 6–9 months from now.
+## Run the project
 
-For withdrawal windows, the backtest measures both the return at the end of the window and the worst result available during the window. This captures cases where an investment eventually recovered but was still underwater when the money could have been needed.
+Python 3.11 or 3.12 is recommended. From the project folder, create an environment and install the dependencies.
 
-## Holding Periods
-
-| Window | Earliest withdrawal | Latest withdrawal |
-|---|---:|---:|
-| 1–3 months | 1 month | 3 months |
-| 3–6 months | 3 months | 6 months |
-| 6–9 months | 6 months | 9 months |
-| 9–12 months | 9 months | 12 months |
-| 12–18 months | 12 months | 18 months |
-| 18–24 months | 18 months | 24 months |
-| 24–36 months | 24 months | 36 months |
-
-The project also supports exact horizons of 1, 3, 6, 9, 12, 18, 24, and 36 months.
-
-## Strategies
-
-The planned comparison includes:
-
-| Category | Strategy |
-|---|---|
-| Cash | Modeled high-yield savings account |
-| Cash | 3-month Treasury bills and Treasury-bill ETFs |
-| Bonds | Short-term Treasury and broad bond ETFs |
-| Stocks | U.S. total-market and S&P 500 ETFs |
-| Mixed portfolios | 10/90, 20/80, and 40/60 stock/cash allocations |
-| Alternatives | Gold and Bitcoin as high-volatility comparison cases |
-
-CDs and I Bonds require separate analysis because their penalties, lockups, purchase limits, and redemption rules are different from fully liquid assets.
-
-## Metrics
-
-Each strategy is evaluated using rolling historical windows and the following metrics:
-
-- Mean and median cumulative return
-- 5th-percentile and worst cumulative return
-- Probability of a nominal loss
-- Probability of a real loss after inflation
-- 5% expected shortfall
-- Worst return available during a withdrawal window
-- Performance relative to the cash benchmark
-
-## Methodology
-
-- Adjusted prices or total-return indices are used so distributions are included.
-- Inflation-adjusted results use CPI data.
-- The high-yield savings benchmark is modeled with a time-varying reference rate rather than applying a current savings rate to the past.
-- Assets are not backfilled into periods before they or their selected proxies existed.
-- Market-regime variables will be lagged to prevent look-ahead bias.
-- Overlapping rolling windows will be supplemented with robustness checks because adjacent observations are not independent.
-
-## Current Status
-
-The core analysis package currently supports:
-
-- Fixed-horizon and withdrawal-window backtests
-- Nominal and inflation-adjusted returns
-- Downside-risk and expected-shortfall calculations
-- Constant-weight stock/cash portfolios
-- Automated tests on Python 3.11 and 3.12
-
-The production data pipeline, final comparison tables, visualizations, and after-tax analysis are under development.
-
-## Installation
-
-Python 3.11 or 3.12 is recommended.
-
-```bash
-git clone https://github.com/JoelTul/short-term-money-lab.git
-cd short-term-money-lab
-python -m venv .venv
-```
-
-Activate the environment on Windows PowerShell:
+**Windows PowerShell:**
 
 ```powershell
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-.\.venv\Scripts\Activate.ps1
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe examples\historical_etf_comparison.py
 ```
 
-Or activate it on macOS/Linux:
+These commands use the environment’s Python directly, so you don’t need to activate it or change PowerShell’s execution policy.
+
+**macOS or Linux:**
 
 ```bash
+python -m venv .venv
 source .venv/bin/activate
-```
-
-Install the project and run the tests:
-
-```bash
-python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
-python -m pytest -q
+python examples/historical_etf_comparison.py
 ```
 
-## Project Structure
+The historical example downloads market data, prints a comparison table, and writes numeric results to `outputs/historical_etf_comparison.csv`. That file is generated locally and is ignored by Git.
 
-```text
-short-term-money-lab/
-├── .github/workflows/tests.yml
-├── src/short_term_money/
-│   ├── __init__.py
-│   ├── backtest.py
-│   ├── config.py
-│   └── data.py
-├── tests/test_backtest.py
-├── pyproject.toml
-└── requirements.txt
-```
+To run the tests, use `.\.venv\Scripts\python.exe -m pytest -q` on Windows, or `python -m pytest -q` with the environment activated on macOS or Linux.
 
-## Roadmap
+There is also an offline example at `examples/synthetic_comparison.py`. Its data is made up to demonstrate the calculations; it is not a historical result.
 
-- Finalize the historical data sources and cash-rate assumptions.
-- Generate comparison tables for every holding period.
-- Add after-tax scenarios for savings interest, Treasury interest, and capital gains.
-- Add charts for loss probability, expected shortfall, and real returns.
-- Produce a decision table linking time horizon and risk tolerance to eligible strategies.
+## Reading the results
 
-## Disclaimer
+| Column | Meaning |
+|---|---|
+| `median_end_return` | Typical return if you withdraw at the end of the range |
+| `p05_end_return` | Fifth-percentile return at the end of the range |
+| `nominal_loss_probability` | Share of historical starting months that ended with a loss |
+| `window_loss_probability` | Share that had a loss at some point within the withdrawal range |
+| `observations` | Number of historical starting months evaluated |
 
-This project is for research and educational purposes and does not constitute personalized financial advice.
+The CSV includes additional metrics and the shared sample dates. Returns and probabilities are stored as decimals: `0.05` means 5%.
+
+Each starting month creates a rolling observation. Nearby observations overlap, so they should not be treated as independent trials or as predictions of future odds.
+
+## How the comparison works
+
+All strategies use the same available months, starting with data requested from January 2008. The script excludes the current, potentially unfinished month and checks for gaps in the monthly data. It uses adjusted ETF prices when the data provider supplies them, so distributions can be reflected in returns.
+
+For a withdrawal window, the analysis checks the return at the latest possible withdrawal month and the worst return between the earliest and latest withdrawal months. The mixed SPY/BIL strategies are rebalanced monthly.
+
+## What’s next
+
+The broader question still needs more than an ETF comparison. Planned work includes:
+
+- A historical, time-varying high-yield savings model
+- Inflation-adjusted historical results
+- After-tax comparisons
+- More assets and checks across different market periods
+- Charts that make downside risk easier to compare
+
+CDs and I Bonds would need separate treatment for their withdrawal rules, limits, and penalties.
+
+This is a research project, not a recommendation to put money needed soon into any particular asset.
