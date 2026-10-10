@@ -44,6 +44,8 @@ python examples/historical_etf_comparison.py
 
 The historical example downloads market data, prints a comparison table, and writes numeric results to `outputs/historical_etf_comparison.csv`. That file is generated locally and is ignored by Git.
 
+To plot those results, run `examples/plot_historical_results.py` with the same Python environment. It saves `outputs/historical_etf_comparison.png`.
+
 To run the tests, use `.\.venv\Scripts\python.exe -m pytest -q` on Windows, or `python -m pytest -q` with the environment activated on macOS or Linux.
 
 There is also an offline example at `examples/synthetic_comparison.py`. Its data is made up to demonstrate the calculations; it is not a historical result.
