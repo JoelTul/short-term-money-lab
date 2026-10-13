@@ -126,3 +126,13 @@ Tests cover return calculations, withdrawal-window losses, inflation adjustments
 CDs and I Bonds would need separate treatment for withdrawal restrictions and penalties.
 
 This project is for research and educational purposes and does not provide personalized financial advice.
+
+## Rust report tool
+
+The optional Rust tool reads the full-sample comparison CSV and prints results for a selected withdrawal window. Install Rust, then run these commands from the project root:
+
+```powershell
+cargo run --manifest-path rust-report/Cargo.toml -- outputs/historical_etf_comparison.csv "6-9 months"
+```
+
+Replace `"6-9 months"` with another window, such as `"12-18 months"`. Generate the CSV with `examples/historical_etf_comparison.py` first.
