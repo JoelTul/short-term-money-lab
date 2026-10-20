@@ -248,3 +248,9 @@ The remaining work for version 1 is:
 Savings account models, additional assets, and tax scenarios can be separate follow-up studies.
 
 This project is for research and educational purposes and does not provide personalized financial advice.
+
+## Published results
+
+Dated result tables and charts are available in [reports](reports/).
+
+Each snapshot identifies its nominal and inflation-adjusted sample dates. These snapshots preserve the outputs used for reviewing the study’s conclusions.
