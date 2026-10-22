@@ -254,3 +254,15 @@ This project is for research and educational purposes and does not provide perso
 Dated result tables and charts are available in [reports](reports/).
 
 Each snapshot identifies its nominal and inflation-adjusted sample dates. These snapshots preserve the outputs used for reviewing the study’s conclusions.
+
+## Data availability
+
+Historical examples download data from external services. A temporary outage
+or maintenance page can prevent an analysis from completing.
+
+If a download fails, stop before copying results into a published report.
+An existing CSV may belong to an earlier run.
+
+A results snapshot is complete only when every listed file is present and
+its sample dates are recorded. Inflation-adjusted conclusions remain pending
+until the corresponding results have been generated and reviewed.
