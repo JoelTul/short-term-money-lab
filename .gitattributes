@@ -1,0 +1,21 @@
+# Detect text files automatically.
+* text=auto
+
+# Keep source code and documentation consistent across platforms.
+*.py text eol=lf
+*.rs text eol=lf
+*.md text eol=lf
+*.toml text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.sh text eol=lf
+
+# Windows scripts.
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Images.
+*.png binary
+*.jpg binary
+*.jpeg binary
