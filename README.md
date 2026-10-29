@@ -266,3 +266,20 @@ An existing CSV may belong to an earlier run.
 A results snapshot is complete only when every listed file is present and
 its sample dates are recorded. Inflation-adjusted conclusions remain pending
 until the corresponding results have been generated and reviewed.
+## What a withdrawal window means
+
+Each observation starts with one investment. A withdrawal window describes
+when that money might be needed.
+
+For example, the 12–18 month window checks:
+
+- The return at month 18.
+- Whether the balance fell below the initial investment at any sampled
+  month-end from month 12 through month 18.
+
+The analysis does not simulate taking money out every month. A loss during
+the window means at least one possible withdrawal date had a shortfall,
+even if the investment recovered by the final month.
+
+Nominal losses measure dollars. Inflation-adjusted losses measure
+purchasing power.
