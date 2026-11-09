@@ -117,7 +117,7 @@ def evaluate_strategy(
         outcomes = rolling_window_outcomes(
             wealth_index, window, inflation_index=inflation_index
         )
-        summary = summarize_outcomes(outcomes)
+        summary = summarize_outcomes(outcomes).to_dict()
         summary["window"] = window.label
         summary["earliest_month"] = window.earliest_month
         summary["latest_month"] = window.latest_month
