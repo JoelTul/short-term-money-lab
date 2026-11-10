@@ -73,6 +73,8 @@ def rolling_window_outcomes(
 
 def summarize_outcomes(outcomes: pd.DataFrame) -> pd.Series:
     """Summarize the left tail and typical result of rolling outcomes."""
+    if outcomes.empty:
+        raise ValueError("No complete rolling windows are available")
     end_returns = outcomes["end_return"].dropna()
     worst_window = outcomes["worst_window_return"].dropna()
     if end_returns.empty:
