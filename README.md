@@ -9,7 +9,7 @@ Short-Term Money Lab compares historical investment returns with the risk of hav
 
 ## Preliminary findings
 
-**Sample: January 2008–September 2026.** The figures below summarize the nominal comparison, before taxes, inflation, and transaction costs. Inflation-adjusted analysis is implemented, but its results and the historical subperiod comparisons still need review before the final writeup.
+**Sample: January 2008-September 2026.** The figures below summarize the published nominal comparison, before taxes, inflation, and transaction costs. Selected historical subperiod checks have also been reviewed. Inflation-adjusted findings remain pending because the inflation CSV is not present in the published snapshot.
 
 ### Stocks delivered higher returns, with meaningful withdrawal risk
 
@@ -50,13 +50,64 @@ BIL sometimes recorded very small negative returns. For the 9–12 month window,
 
 A tiny loss and a large loss both count toward loss probability. Frequency should therefore be read alongside loss size. BIL is also an ETF, so these results should not be interpreted as historical savings account outcomes.
 
-### Working conclusion
+### Historical periods changed downside risk
 
-The decision depends on how much shortfall the expense can tolerate and whether withdrawal can be delayed.
+The full-sample results hide substantial differences between historical periods.
 
-For a mandatory expense, the possibility of being underwater matters even when the median return is attractive. For a flexible goal, accepting some stock exposure may be a tradeoff worth evaluating.
+For SPY's 18-24 month withdrawal window:
 
-The study has not established a universally best allocation or a reliable cutoff at which stocks become suitable for short-term spending.
+| Period | Starting months tested | Fifth-percentile return at month 24 | Loss at month 24 | Loss during months 18-24 |
+|---|---:|---:|---:|---:|
+| 2008-2014 | 60 | -14.5% | 13.3% | 16.7% |
+| 2015-2019 | 36 | 18.1% | 0.0% | 0.0% |
+| January 2020-September 2026 | 57 | 2.7% | 1.8% | 28.1% |
+
+In the full sample, SPY's fifth-percentile return at month 24 was positive
+at 2.5%. Within 2008-2014, it was negative at -14.5%. The choice of historical
+period materially changes the picture of downside risk.
+
+The more recent period also illustrates withdrawal timing risk: only 1.8%
+of eligible observations ended below the initial balance at month 24,
+but 28.1% fell below it at some month-end during months 18-24.
+
+Every observation starts and finishes inside its selected period.
+These subsets omit windows crossing period boundaries, so their observation
+counts do not add up to the full-sample count.
+
+### SHY also experienced losses over longer windows
+
+For SHY in January 2020-September 2026, 37.8% of the 45 eligible observations
+ended with a nominal loss at month 36. During months 24-36, 53.3% experienced
+at least one month-end balance below the initial investment.
+
+The worst ending return at month 36 in that subset was approximately -3.6%.
+A short-term Treasury bond ETF therefore did not consistently preserve the
+initial dollar balance in this sample.
+
+### Updated working conclusion
+
+The findings so far identify three important tradeoffs:
+
+- SPY offered substantial upside, alongside shortfalls at possible withdrawal dates.
+- Small SPY/BIL allocations reduced several downside measures while giving up upside.
+- BIL's small negative outcomes and SHY's larger losses show why loss frequency
+  needs to be considered alongside loss size.
+
+A positive fifth-percentile return is not a minimum return or a guarantee.
+Likewise, observing no losses at a particular horizon does not establish
+that future losses are impossible.
+
+The study has not established one best allocation for every short-term goal.
+Historical savings accounts, CDs, crypto, and after-tax outcomes have not been
+compared in these published results. Inflation-adjusted conclusions remain
+pending because the inflation CSV is still missing from the published snapshot.
+
+Returns above are cumulative and nominal. Rolling observations overlap,
+and their historical loss frequencies are not forecasts. The sample also
+excludes starting dates at the 2000 and 2007 market peaks.
+
+Source: [October 19 results snapshot](reports/2026-10-19-232051/),
+including the full-sample nominal and historical-period comparison tables.
 
 ## Current comparison
 
@@ -239,21 +290,26 @@ GitHub Actions runs Python tests on Python 3.11 and 3.12. Rust formatting, Clipp
 
 ## Finishing the first study
 
+The nominal results snapshot and chart are published. Selected subperiod
+findings are now summarized above.
+
 The remaining work for version 1 is:
 
-- Review the inflation-adjusted results and identify where nominal gains failed to preserve purchasing power.
-- Check whether the main findings hold across the existing historical subperiods.
-- Publish a dated results snapshot, supporting chart, and final writeup.
+- Generate, validate, and publish the inflation-adjusted results.
+- Review where nominal gains failed to preserve purchasing power.
+- Complete the final writeup using the published evidence.
 
-Savings account models, additional assets, and tax scenarios can be separate follow-up studies.
+Savings account models, additional assets, and tax scenarios can be
+separate follow-up studies.
 
-This project is for research and educational purposes and does not provide personalized financial advice.
+This project is for research and educational purposes and does not provide
+personalized financial advice.
 
 ## Published results
 
 Dated result tables and charts are available in [reports](reports/).
 
-Each snapshot identifies its nominal and inflation-adjusted sample dates. These snapshots preserve the outputs used for reviewing the study’s conclusions.
+The current snapshot contains nominal and historical-period results. Its inflation comparison remains incomplete. Published tables preserve the outputs used to review the findings.
 
 ## Data availability
 
